@@ -4,6 +4,14 @@ import "./App.css";
 
 const App = () => {
   const [counter, setCounter] = useState(0);
+  // This is a frequently asked inteview question
+  const addValue = () => {
+    //counter = counter + 1
+    setCounter((prevCounter) => prevCounter + 1);
+    setCounter((prevCounter) => prevCounter + 1);
+    setCounter((prevCounter) => prevCounter + 1);
+    setCounter((prevCounter) => prevCounter + 1);
+  };
   return (
     <div>
       <div>

@@ -83,7 +83,7 @@ const postSlice = createSlice({
         state.error = null;
       })
       .addCase(getAllPosts.fulfilled, (state, action) => {
-        state.data = action.payload.documents;
+        state.data = action.payload?.documents || [];
         state.loading = false;
         state.error = null;
       })
@@ -100,7 +100,7 @@ const postSlice = createSlice({
         const index = state.data.findIndex(
           (post) => post.$id === action.payload.$id
         );
-        state.data[index] = action.payload;
+        if (index !== -1) state.data[index] = action.payload;
         state.loading = false;
         state.error = null;
       })

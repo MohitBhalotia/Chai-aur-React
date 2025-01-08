@@ -23,69 +23,51 @@ const PublicRoute = ({ children }) => (
 const routes = [
   {
     path: "/",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <Home />
-      </Suspense>
-    ),
+    element: <Home />,
   },
   {
     path: "/login",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <PublicRoute>
-          <Login />
-        </PublicRoute>
-      </Suspense>
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
     ),
   },
   {
     path: "/signup",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <PublicRoute>
-          <Signup />
-        </PublicRoute>
-      </Suspense>
+      <PublicRoute>
+        <Signup />
+      </PublicRoute>
     ),
   },
   {
     path: "/my-posts",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <PrivateRoute>
-          <AllPosts />
-        </PrivateRoute>
-      </Suspense>
+      <PrivateRoute>
+        <AllPosts />
+      </PrivateRoute>
     ),
   },
   {
     path: "/add-post",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <PrivateRoute>
-          <AddPost />
-        </PrivateRoute>
-      </Suspense>
+      <PrivateRoute>
+        <AddPost />
+      </PrivateRoute>
     ),
   },
   {
     path: "/edit-post/:slug",
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <PrivateRoute>
-          <EditPost />
-        </PrivateRoute>
-      </Suspense>
+      <PrivateRoute>
+        <EditPost />
+      </PrivateRoute>
     ),
   },
   {
     path: "/post/:slug",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <Post />
-      </Suspense>
-    ),
+    element: <Post />,
   },
 ];
 

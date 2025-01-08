@@ -5,6 +5,13 @@ export class FileService {
   client = new Client();
   storage;
   constructor() {
+    if (
+      !config.appwriteUrl ||
+      !config.appwriteProjectId ||
+      !config.appwriteBucketId
+    ) {
+      throw new Error("Appwrite configuration is incomplete.");
+    }
     this.client
       .setEndpoint(config.appwriteUrl)
       .setProject(config.appwriteProjectId);
@@ -12,27 +19,41 @@ export class FileService {
   }
   async uploadFile(file) {
     try {
-      return this.storage.createFile(
+      // Optional: Validate file type
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Only image files are allowed.");
+      }
+      return await this.storage.createFile(
         config.appwriteBucketId,
         ID.unique(),
         file
       );
     } catch (error) {
-      throw error;
+      console.error(`Failed to upload file: ${error.message}`);
+      throw new Error("File upload failed. Please try again.");
     }
   }
 
   async deleteFile(fileId) {
     try {
       await this.storage.deleteFile(config.appwriteBucketId, fileId);
-      return true;
+      return { success: true, message: "File deleted successfully." };
     } catch (error) {
-      throw error;
+      console.error(`Failed to delete file: ${error.message}`);
+      return {
+        success: false,
+        message: "File deletion failed. File may not exist.",
+      };
     }
   }
 
   getFilePreview(fileId) {
-    return this.storage.getFilePreview(config.appwriteBucketId, fileId);
+    try {
+      return this.storage.getFilePreview(config.appwriteBucketId, fileId);
+    } catch (error) {
+      console.error(`Failed to get file preview: ${error.message}`);
+      throw new Error("File preview could not be retrieved.");
+    }
   }
 }
 

@@ -5,6 +5,9 @@ export class AuthService {
   client = new Client();
   account;
   constructor() {
+    if (!config.appwriteUrl || !config.appwriteProjectId) {
+      throw new Error("Appwrite configuration is missing");
+    }
     this.client
       .setEndpoint(config.appwriteUrl)
       .setProject(config.appwriteProjectId);
@@ -20,10 +23,8 @@ export class AuthService {
       );
       if (userAccount) {
         // call another method
-        return await this.login({email, password});
-    } else {
-       return  userAccount;
-    }
+        return await this.login({ email, password });
+      }
     } catch (error) {
       console.error(`Failed to create account: ${error.message}`);
       return null;

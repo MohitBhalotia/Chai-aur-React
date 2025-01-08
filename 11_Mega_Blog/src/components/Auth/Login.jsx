@@ -1,28 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../../store/slices/authSlice";
 import { Button, Input, Logo } from "../../components";
-import authService from "../../appwrite/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-  const [error, setError] = useState(null);
 
   const login = async (data) => {
-    setError(null);
     try {
-      const session = await authService.login(data);
+      const session = await dispatch(authLogin(data));
       if (session) {
-        const userData = await authService.getCurrentUser();
-        if (userData) dispatch(authLogin({ userData }));
-        navigate("/");
+        const userData = useSelector((state) => state.auth.userData);
+        if (userData) navigate("/");
       }
     } catch (error) {
-      setError(error.message);
+      console.error("Login failed:", error);
     }
   };
 
@@ -39,16 +35,13 @@ const Login = () => {
         </h2>
         <p className="mt-4 text-sm text-gray-600 text-center">
           Don&apos;t have an account?&nbsp;
-          <Link
-            to="/signup"
-            className="text-blue-600 hover:underline"
-          >
+          <Link to="/signup" className="text-blue-600 hover:underline">
             Signup
           </Link>
         </p>
-        {error && (
+        {/* {error && (
           <p className="mt-4 text-center text-sm text-red-500">{error}</p>
-        )}
+        )} */}
         <form onSubmit={handleSubmit(login)} className="mt-6">
           <div className="space-y-4">
             <Input

@@ -1,29 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "../../appwrite/auth";
-import { login } from "../../store/slices/authSlice";
+import { register as registerUser } from "../../store/slices/authSlice";
 import { Button, Logo, Input } from "../index";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
 
   const signup = async (data) => {
-    setError(null);
     try {
-      const session = await authService.createAccount(data);
+      const session = await dispatch(registerUser(data));
       if (session) {
-        const userData = await authService.getCurrentUser();
-        if (userData) dispatch(login({ userData }));
-        navigate("/");
+        const userData = useSelector((state) => state.auth.userData);
+        if (userData) navigate("/");
       }
-    } catch (error) {
-      setError(error.message);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -39,10 +33,7 @@ const Signup = () => {
         </h2>
         <p className="mt-4 text-sm text-gray-600 text-center">
           Already have an account?&nbsp;
-          <Link
-            to="/login"
-            className="text-blue-600 hover:underline"
-          >
+          <Link to="/login" className="text-blue-600 hover:underline">
             Sign In
           </Link>
         </p>

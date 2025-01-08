@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "../../store/slices/postSlice";
 
 const Home = () => {
+  const user = useSelector((state) => state.auth.status);
   const posts = useSelector((state) => state.post.data);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllPosts());
-  }, [dispatch]);
+  }, [dispatch, user]);
 
-  const user = useSelector((state) => state.auth.status);
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

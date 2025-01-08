@@ -11,7 +11,7 @@ export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const session = await authService.login({ ...credentials });
+      const session = await authService.login(credentials);
       return session;
     } catch (error) {
       return rejectWithValue(error?.message || "Login failed");
@@ -82,6 +82,8 @@ const authSlice = createSlice({
       .addCase(logout.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        localStorage.removeItem("status");
+        localStorage.removeItem("userData");
       })
 
       .addCase(register.pending, (state, action) => {

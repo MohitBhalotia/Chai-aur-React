@@ -7,9 +7,10 @@ const Home = () => {
   const user = useSelector((state) => state.auth.status);
   const posts = useSelector((state) => state.post.data);
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(getAllPosts());
-  }, [dispatch, user]);
+    if (user) dispatch(getAllPosts());
+  }, [dispatch]);
 
   if (!user) {
     return (

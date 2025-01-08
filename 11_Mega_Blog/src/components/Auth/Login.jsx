@@ -9,14 +9,11 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-
+  const userData = useSelector((state) => state.auth.userData);
   const login = async (data) => {
     try {
       const session = await dispatch(authLogin(data));
-      if (session) {
-        const userData = useSelector((state) => state.auth.userData);
-        if (userData) navigate("/");
-      }
+      if (session && userData) navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
     }

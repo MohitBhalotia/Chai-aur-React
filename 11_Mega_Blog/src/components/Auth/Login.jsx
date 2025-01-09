@@ -8,14 +8,20 @@ import { useForm } from "react-hook-form";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
-  const userData = useSelector((state) => state.auth.userData);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const { loading, error } = useSelector((state) => state.auth);
+
   const login = async (data) => {
     try {
-      const session = await dispatch(authLogin(data));
-      if (session && userData) navigate("/");
-    } catch (error) {
-      console.error("Login failed:", error);
+      const session = await dispatch(authLogin(data)).unwrap();
+      if (session) navigate("/");
+    } catch (err) {
+      console.error("Login failed:", err);
     }
   };
 
@@ -27,18 +33,18 @@ const Login = () => {
             <Logo width="100%" />
           </span>
         </div>
-        <h2 className="text-2xl font-bold text-gray-800 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 text-center">
           Sign in to your account
         </h2>
-        <p className="mt-4 text-sm text-gray-600 text-center">
+        <p className="mt-4  text-gray-600 text-center">
           Don&apos;t have an account?&nbsp;
           <Link to="/signup" className="text-blue-600 hover:underline">
             Signup
           </Link>
         </p>
-        {/* {error && (
-          <p className="mt-4 text-center text-sm text-red-500">{error}</p>
-        )} */}
+        {error && (
+          <p className="mt-4 text-center text-red-500">{error}</p>
+        )}
         <form onSubmit={handleSubmit(login)} className="mt-6">
           <div className="space-y-4">
             <Input
@@ -52,19 +58,24 @@ const Login = () => {
                   message: "Email is invalid",
                 },
               })}
+              error={errors.email?.message}
             />
-
             <Input
               label="Password: "
               type="password"
               placeholder="Enter your password"
               {...register("password", { required: "Password is required" })}
+              error={errors.password?.message}
             />
             <Button
               type="submit"
-              className="w-full bg-blue-500 text-white hover:bg-blue-600"
-              children={"Sign in"}
-            />
+              disabled={loading}
+              className={`w-full ${
+                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+              } text-white`}
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
           </div>
         </form>
       </div>

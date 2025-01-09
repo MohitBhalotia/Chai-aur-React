@@ -1,132 +1,172 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import fileService from "../../appwrite/file";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createPost, updatePost } from "../../store/slices/postSlice";
+
 export default function PostForm({ post }) {
+  const [featuredImage, setFeaturedImage] = useState(null);
+  const { loading, error } = useSelector((state) => state.post);
   const dispatch = useDispatch();
-  const { register, handleSubmit, watch, setValue, control, getValues } =
-    useForm({
-      defaultValues: {
-        title: post?.title || "",
-        slug: post?.$id || "",
-        content: post?.content || "",
-        status: post?.status || "active",
-      },
-    });
-  const { slug } = useParams();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.auth.userData.$id);
+  const { slug } = useParams();
 
-  const submit = async (data) => {
-    if (post) {
-      const file = data.image[0]
-        ? await fileService.uploadFile(data.image[0])
-        : null;
-
-      if (file) {
-        await fileService.deleteFile(post.featuredImage);
-      }
-
-      const updatedPost = await dispatch(
-        updatePost({
-          id: slug,
-          data,
-          featuredImage: file ? file.$id : undefined,
-        })
-      );
-      navigate(`/post/${updatedPost.payload.$id}`);
-    } else {
-      const file = await fileService.uploadFile(data.image[0]);
-
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
-        const createdPost = await dispatch(createPost({ ...data, userId }));
-        navigate(`/post/${createdPost.payload.$id}`);
-      }
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: post?.title || "",
+      slug: post?.$id || "",
+      content: post?.content || "",
+      status: post?.status || "active",
+    },
+  });
 
   const slugTransform = useCallback((value) => {
-    if (value && typeof value === "string")
+    if (value && typeof value === "string") {
       return value
         .trim()
         .toLowerCase()
         .replace(/[^a-zA-Z\d\s]+/g, "-")
         .replace(/\s/g, "-");
-
+    }
     return "";
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (post?.featuredImage) {
+      setFeaturedImage(fileService.getFilePreview(post.featuredImage));
+    }
     const subscription = watch((value, { name }) => {
       if (name === "title") {
         setValue("slug", slugTransform(value.title), { shouldValidate: true });
       }
     });
-
     return () => subscription.unsubscribe();
-  }, [watch, slugTransform, setValue]);
+  }, [watch, slugTransform, setValue, post]);
+
+  const handleImageChange = (event) => {
+    if (event.target.files[0]) {
+      setFeaturedImage(URL.createObjectURL(event.target.files[0]));
+    }
+  };
+
+  const submit = async (data) => {
+    try {
+      if (post) {
+        const file = data.image[0]
+          ? await fileService.uploadFile(data.image[0])
+          : null;
+
+        if (file) {
+          await fileService.deleteFile(post.featuredImage);
+        }
+
+        const updatedPost = await dispatch(
+          updatePost({
+            id: slug,
+            data,
+            featuredImage: file ? file.$id : undefined,
+          })
+        );
+        navigate(`/post/${updatedPost.payload?.$id}`);
+      } else {
+        const file = await fileService.uploadFile(data.image[0]);
+
+        if (file) {
+          const fileId = file.$id;
+          data.featuredImage = fileId;
+          const createdPost = await dispatch(createPost({ ...data, userId }));
+          navigate(`/post/${createdPost.payload?.$id}`);
+        }
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="gap-6 flex ">
+    <form onSubmit={handleSubmit(submit)} className="gap-6 flex">
+      {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       <div className="w-full md:w-2/3">
         <Input
           label="Title: "
           placeholder="Enter the title"
-          className="mb-6"
-          {...register("title", { required: true })}
+          {...register("title", { required: "Title is required" })}
+          error={errors.title?.message}
         />
         <Input
           label="Slug: "
           placeholder="Enter the slug"
-          className="mb-6"
-          {...register("slug", { required: true })}
-          onInput={(e) => {
+          {...register("slug", { required: "Slug is required" })}
+          onInput={(e) =>
             setValue("slug", slugTransform(e.currentTarget.value), {
               shouldValidate: true,
-            });
-          }}
+            })
+          }
           readOnly={post}
+          error={errors.slug?.message}
         />
         <RTE
           label="Content: "
           name="content"
           control={control}
           defaultValue={getValues("content")}
+          rules={{ required: "Content is required" }}
         />
+        {errors.content && (
+          <p className="text-red-500 text-sm">{errors.content.message}</p>
+        )}
       </div>
       <div className="w-full md:w-1/3">
         <Input
           label="Featured Image: "
           type="file"
-          className="mb-6"
           accept="image/png, image/jpg, image/jpeg, image/gif"
-          {...register("image", { required: !post })}
+          {...register("image", {
+            required: { value: !post, message: "Image is required" },
+          })}
+          onChange={handleImageChange}
+          error={errors.image?.message}
         />
-        {post && (
-          <div className="w-full mb-6">
-            <img
-              src={fileService.getFilePreview(post.featuredImage)}
-              alt={post.title}
-              className="w-full rounded-lg shadow-md"
-            />
-          </div>
+        {featuredImage && (
+          <img
+            src={featuredImage}
+            alt="Preview"
+            className="w-full mb-6 rounded-lg shadow-md"
+          />
         )}
         <Select
           options={["active", "inactive"]}
           label="Status: "
-          className="mb-6"
-          {...register("status", { required: true })}
+          {...register("status")}
+          error={errors.status?.message}
         />
         <Button
           type="submit"
-          className="w-full bg-blue-500 text-white hover:bg-blue-600"
+          disabled={loading}
+          className={`w-full mt-6 text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          {post ? "Update" : "Submit"}
+          {post
+            ? loading
+              ? "Updating..."
+              : "Update"
+            : loading
+            ? "Submitting..."
+            : "Submit"}
         </Button>
       </div>
     </form>

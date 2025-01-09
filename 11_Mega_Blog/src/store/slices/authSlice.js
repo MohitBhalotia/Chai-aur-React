@@ -53,10 +53,10 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
+        state.userData = action.payload;
+        state.status = true;
         state.error = null;
         state.loading = false;
-        state.status = true;
-        state.userData = action.payload;
         localStorage.setItem("status", true);
         localStorage.setItem("userData", JSON.stringify(action.payload));
       })
@@ -73,9 +73,9 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state, action) => {
         state.error = null;
-        state.loading = false;
-        state.status = false;
         state.userData = null;
+        state.status = false;
+        state.loading = false;
         localStorage.removeItem("status");
         localStorage.removeItem("userData");
       })

@@ -11,11 +11,6 @@ export const createPost = createAsyncThunk("posts/addPost", async (post) => {
   return createdPost;
 });
 
-export const getPost = createAsyncThunk("posts/fetchPost", async (id) => {
-  const post = await postService.getPost(id);
-  return post;
-});
-
 export const getAllPosts = createAsyncThunk("posts/fetchAllPosts", async () => {
   const posts = await postService.getPosts();
   return posts;
@@ -48,32 +43,11 @@ const postSlice = createSlice({
         state.error = null;
       })
       .addCase(createPost.fulfilled, (state, action) => {
-        state.data.push(action.payload);
         state.loading = false;
         state.error = null;
+        state.data.push(action.payload);
       })
       .addCase(createPost.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-
-      .addCase(getPost.pending, (state, action) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getPost.fulfilled, (state, action) => {
-        const index = state.data.findIndex(
-          (post) => post.$id === action.payload.$id
-        );
-        if (index !== -1) {
-          state.data[index] = action.payload; // Update existing post
-        } else {
-          state.data.push(action.payload); // Add new post
-        }
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(getPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
@@ -83,9 +57,9 @@ const postSlice = createSlice({
         state.error = null;
       })
       .addCase(getAllPosts.fulfilled, (state, action) => {
-        state.data = action.payload?.documents || [];
         state.loading = false;
         state.error = null;
+        state.data = action.payload?.documents || [];
       })
       .addCase(getAllPosts.rejected, (state, action) => {
         state.loading = false;
@@ -97,12 +71,12 @@ const postSlice = createSlice({
         state.error = null;
       })
       .addCase(updatePost.fulfilled, (state, action) => {
-        const index = state.data.findIndex(
-          (post) => post.$id === action.payload.$id
-        );
-        if (index !== -1) state.data[index] = action.payload;
         state.loading = false;
         state.error = null;
+        const index = state.data.findIndex(
+          (post) => post?.$id === action.payload?.$id
+        );
+        if (index !== -1) state.data[index] = action.payload;
       })
       .addCase(updatePost.rejected, (state, action) => {
         state.loading = false;
@@ -114,9 +88,9 @@ const postSlice = createSlice({
         state.error = null;
       })
       .addCase(deletePost.fulfilled, (state, action) => {
-        state.data = state.data.filter((post) => post.$id !== action.payload);
         state.loading = false;
         state.error = null;
+        state.data = state.data.filter((post) => post.$id !== action.payload);
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.loading = false;

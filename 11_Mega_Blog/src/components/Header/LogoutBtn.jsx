@@ -1,18 +1,20 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const LogoutBtn = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const logoutHandler = () => {
-    dispatch(logout())
+    dispatch(logout());
+    navigate("/");
   };
 
   return (
     <button
       onClick={logoutHandler}
-      className="inline-block px-6 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out"
+      className="inline-block px-6 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-300 transition duration-300 ease-in-out"
     >
       Logout
     </button>

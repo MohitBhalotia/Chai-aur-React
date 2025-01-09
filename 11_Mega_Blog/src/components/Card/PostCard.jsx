@@ -17,7 +17,10 @@ const PostCard = ({ post }) => {
           />
         </div>
         <div className="p-4">
-          <h1 className="text-lg font-semibold text-gray-800 truncate">
+          <h1
+            className="text-lg font-semibold text-gray-800 truncate"
+            title={post.title}
+          >
             {post.title}
           </h1>
         </div>

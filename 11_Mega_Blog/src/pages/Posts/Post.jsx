@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import fileService from "../../appwrite/file";
 import { Button, Container } from "../../components";
 import parse from "html-react-parser";
 import { useDispatch, useSelector } from "react-redux";
-import { getPost, deletePost } from "../../store/slices/postSlice";
+import { deletePost } from "../../store/slices/postSlice";
+import postService from "../../appwrite/post";
 
 export default function Post() {
   const { slug } = useParams();
@@ -12,23 +13,56 @@ export default function Post() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
 
-  const post = useSelector((state) =>
-    state.post.data.find((post) => post.$id === slug)
-  );
-  const isAuthor = post && userData ? post.userId === userData.$id : false;
-  useEffect(() => {
-    if (slug) {
-      dispatch(getPost(slug));
-    } else navigate("/");
-  }, [slug, navigate]);
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const deleteHandler = () => {
-    const status = dispatch(deletePost(post.$id));
-    if (status) {
-      fileService.deleteFile(post.featuredImage);
-      navigate("/my-posts");
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        if (slug) {
+          const fetchedPost = await postService.getPost(slug);
+          setPost(fetchedPost);
+        }
+      } catch (err) {
+        console.error("Failed to fetch post:", err);
+        setError("Failed to fetch the post. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [slug]);
+
+  const isAuthor = post && userData ? post.userId === userData.$id : false;
+
+  const deleteHandler = async () => {
+    try {
+      const status = await dispatch(deletePost(post.$id));
+      if (status) {
+        await fileService.deleteFile(post.featuredImage);
+        navigate("/my-posts");
+      }
+    } catch (err) {
+      console.error("Failed to delete post:", err);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-gray-500 text-3xl">Loading post...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-red-500 text-lg">{error}</p>
+      </div>
+    );
+  }
 
   return post ? (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -71,7 +105,7 @@ export default function Post() {
     </div>
   ) : (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <p className="text-gray-500 text-lg">Loading post...</p>
+      <p className="text-gray-500 text-lg">Post not found.</p>
     </div>
   );
 }

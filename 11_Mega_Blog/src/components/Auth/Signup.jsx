@@ -8,16 +8,21 @@ import { useForm } from "react-hook-form";
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const { loading, error } = useSelector((state) => state.auth);
 
   const signup = async (data) => {
     try {
-      const session = await dispatch(registerUser(data));
-      if (session) {
-        const userData = useSelector((state) => state.auth.userData);
-        if (userData) navigate("/");
-      }
-    } catch (error) {}
+      const session = await dispatch(registerUser(data)).unwrap();
+      if (session) navigate("/");
+    } catch (err) {
+      console.error("Signup failed:", err);
+    }
   };
 
   return (
@@ -37,15 +42,14 @@ const Signup = () => {
             Sign In
           </Link>
         </p>
-        {/* {error && (
-          <p className="mt-4 text-center text-sm text-red-500">{error}</p>
-        )} */}
+        {error && <p className="mt-4 text-center text-sm text-red-500">{error}</p>}
         <form onSubmit={handleSubmit(signup)} className="mt-6">
           <div className="space-y-4">
             <Input
               label="Full Name: "
               placeholder="Enter your full name"
               {...register("name", { required: "Name is required" })}
+              error={errors.name?.message}
             />
             <Input
               label="Email: "
@@ -58,19 +62,21 @@ const Signup = () => {
                   message: "Email is invalid",
                 },
               })}
+              error={errors.email?.message}
             />
-
             <Input
               label="Password: "
               type="password"
               placeholder="Enter your password"
               {...register("password", { required: "Password is required" })}
+              error={errors.password?.message}
             />
             <Button
               type="submit"
-              className="w-full bg-blue-500 text-white hover:bg-blue-600"
+              disabled={loading}
+              className={`w-full ${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"} text-white`}
             >
-              Create account
+              {loading ? "Creating account..." : "Create account"}
             </Button>
           </div>
         </form>

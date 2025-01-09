@@ -44,7 +44,7 @@ export class PostService {
 
   async updatePost(slug, { title, content, featuredImage, status }) {
     try {
-      if (!docId || !title || !content) {
+      if (!slug || !title || !content) {
         throw new Error("Document ID, title, and content are required.");
       }
       return await this.databases.updateDocument(
@@ -83,7 +83,7 @@ export class PostService {
 
   async getPost(slug) {
     try {
-      if (!docId) {
+      if (!slug) {
         throw new Error("Document ID is required to fetch a post.");
       }
       return await this.databases.getDocument(

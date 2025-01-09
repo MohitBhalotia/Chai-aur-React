@@ -3,26 +3,35 @@ import { useSelector, useDispatch } from "react-redux";
 import { Container, PostCard } from "../../components";
 import { getAllPosts } from "../../store/slices/postSlice";
 import { selectUserPosts } from "../../store/selectors/postSelectors";
+import { useNavigate } from "react-router-dom";
 
 const AllPosts = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Use the memoized selector
+  // Memoized selector for user-specific posts
   const posts = useSelector(selectUserPosts);
 
-  // Get loading and error states
+  // Loading and error states
   const loading = useSelector((state) => state.post.loading);
   const error = useSelector((state) => state.post.error);
 
   useEffect(() => {
-    dispatch(getAllPosts());
-  }, [dispatch]);
+    if (posts.length === 0) {
+      dispatch(getAllPosts());
+    }
+  }, [dispatch, posts.length]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <Container>
-          <p className="text-center text-gray-500 text-lg">Loading posts...</p>
+          <p
+            className="text-center text-gray-500 text-lg"
+            aria-live="polite"
+          >
+            Loading posts...
+          </p>
         </Container>
       </div>
     );
@@ -32,7 +41,17 @@ const AllPosts = () => {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <Container>
-          <p className="text-center text-red-500 text-lg">Error: {error}</p>
+          <div className="text-center">
+            <p className="text-red-500 text-lg mb-4" aria-live="assertive">
+              Error: {error}
+            </p>
+            <button
+              onClick={() => dispatch(getAllPosts())}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
         </Container>
       </div>
     );
@@ -51,7 +70,15 @@ const AllPosts = () => {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500 text-lg">No posts available.</p>
+          <div className="text-center">
+            <p className="text-gray-500 text-lg mb-4">No posts available.</p>
+            <button
+              onClick={() => navigate("/add-post")}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Add a Post
+            </button>
+          </div>
         )}
       </Container>
     </div>

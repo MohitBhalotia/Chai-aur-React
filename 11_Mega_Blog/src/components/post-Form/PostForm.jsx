@@ -133,9 +133,7 @@ export default function PostForm({ post }) {
             rules={{ required: "Content is required" }}
           />
         </Suspense>
-        {errors.content && (
-          <p className="text-red-500 text-sm mt-2">{errors.content.message}</p>
-        )}
+        
       </div>
       <div className="w-full md:w-1/3">
         <Input

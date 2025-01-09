@@ -105,7 +105,7 @@ export default function Post() {
             <img
               src={fileService.getFilePreview(post.featuredImage)}
               alt={post.title}
-              className={`absolute top-0 left-0 w-full h-full object-scale-down rounded-lg shadow-md transition-opacity duration-500 ${
+              className={`absolute top-0 left-0 w-full h-full object-contain rounded-lg shadow-md transition-opacity duration-500 ${
                 imageLoaded ? "opacity-100" : "opacity-0"
               }`}
               loading="lazy"

@@ -12,7 +12,8 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const session = await authService.login(credentials);
-      return session;
+      if (session) return session;
+      else throw new Error();
     } catch (error) {
       return rejectWithValue(error?.message || "Login failed");
     }
@@ -35,8 +36,9 @@ export const register = createAsyncThunk(
   "auth/register",
   async (credentials, { rejectWithValue }) => {
     try {
-      const session = await authService.createAccount({ ...credentials });
-      return session;
+      const session = await authService.createAccount(credentials);
+      if (session) return session;
+      else throw Error();
     } catch (error) {
       return rejectWithValue(error?.message || "Registration failed");
     }
@@ -61,8 +63,10 @@ const authSlice = createSlice({
         localStorage.setItem("userData", JSON.stringify(action.payload));
       })
       .addCase(login.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload;
+        state.loading = false;
+        state.status = false;
+        state.userData = null;
         localStorage.removeItem("status");
         localStorage.removeItem("userData");
       })
@@ -80,6 +84,8 @@ const authSlice = createSlice({
         localStorage.removeItem("userData");
       })
       .addCase(logout.rejected, (state, action) => {
+        state.status = false;
+        state.userData = null;
         state.loading = false;
         state.error = action.payload;
         localStorage.removeItem("status");
@@ -101,6 +107,8 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.status = false;
+        state.userData = null;
         localStorage.removeItem("status");
         localStorage.removeItem("userData");
       });

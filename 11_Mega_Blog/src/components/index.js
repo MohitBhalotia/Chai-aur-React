@@ -11,6 +11,7 @@ import Signup from "./Auth/Signup";
 import Login from "./Auth/Login";
 import PostCard from "./Card/PostCard";
 import PostForm from "./post-Form/PostForm";
+import PasswordInput from './Input/PasswordInput'
 
 export {
   Header,
@@ -26,4 +27,5 @@ export {
   Login,
   PostCard,
   PostForm,
+  PasswordInput
 };

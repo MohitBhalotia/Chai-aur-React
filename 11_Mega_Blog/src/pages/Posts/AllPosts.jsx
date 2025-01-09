@@ -27,15 +27,15 @@ const AllPosts = () => {
     return Array.from({ length: 8 }).map((_, index) => (
       <div
         key={index}
-        className="w-full border border-black bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg"
+        className="w-full border border-gray-700 bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-lg"
       >
         {/* Skeleton for Image */}
         <div className="w-full mb-2 p-4">
-          <Skeleton height={192} className="w-full rounded-t-lg" />
+          <Skeleton height={192} baseColor="#374151" highlightColor="#4b5563" className="w-full rounded-t-lg" />
         </div>
         {/* Skeleton for Title */}
         <div className="p-4">
-          <Skeleton height={24} />
+          <Skeleton height={24} baseColor="#374151" highlightColor="#4b5563" />
         </div>
       </div>
     ));
@@ -44,7 +44,7 @@ const AllPosts = () => {
   // Error state handling
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-gray-900 py-12">
         <Container>
           <div className="text-center">
             <p className="text-red-500 text-lg mb-4" aria-live="assertive">
@@ -52,7 +52,7 @@ const AllPosts = () => {
             </p>
             <button
               onClick={() => dispatch(getAllPosts())}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"
             >
               Retry
             </button>
@@ -63,10 +63,10 @@ const AllPosts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-900 py-12">
       <Container>
-        <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          {loading ? <Skeleton width={150} /> : "My Posts"}
+        <h1 className="text-3xl font-bold text-gray-200 text-center mb-8">
+          {loading ? <Skeleton width={150} baseColor="#374151" highlightColor="#4b5563" /> : "My Posts"}
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

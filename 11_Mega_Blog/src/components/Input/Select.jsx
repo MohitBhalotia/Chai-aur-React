@@ -19,7 +19,7 @@ const Select = (
       {label && (
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-300 mb-2"
         >
           {label}
         </label>
@@ -30,7 +30,10 @@ const Select = (
         {...props}
         id={id}
         ref={ref}
-        className={`px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 text-gray-900 w-full ${className}`}
+        aria-invalid={!!error}
+        className={`px-4 py-2 bg-gray-700 text-gray-200 border ${
+          error ? "border-red-500" : "border-gray-600"
+        } rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full ${className}`}
       >
         {/* Placeholder */}
         {placeholder && <option value="">{placeholder}</option>}

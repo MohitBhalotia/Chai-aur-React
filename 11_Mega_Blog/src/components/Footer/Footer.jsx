@@ -43,7 +43,7 @@ function Footer() {
           <div className="w-full p-6 md:w-1/2 lg:w-5/12">
             <div className="flex h-full flex-col justify-between">
               <div className="mb-4 inline-flex items-center hover:opacity-80 transition-opacity duration-300">
-                <Logo width="100px" />
+                <Logo width="50px" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">
@@ -64,7 +64,7 @@ function Footer() {
                   {section.links.map((link, idx) => (
                     <li key={idx}>
                       <Link
-                        className="text-base font-medium hover:text-white"
+                        className="text-base font-medium text-gray-300 hover:text-white transition-colors duration-200"
                         to={link.path}
                         aria-label={`Go to ${link.label}`}
                       >

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import AuthLayout from "../Layout/AuthLayout";
 
 // Lazy-loaded components
@@ -9,6 +9,7 @@ const AddPost = lazy(() => import("../pages/Posts/AddPost"));
 const AllPosts = lazy(() => import("../pages/Posts/AllPosts"));
 const EditPost = lazy(() => import("../pages/Posts/EditPost"));
 const Post = lazy(() => import("../pages/Posts/Post"));
+const NotFound = lazy(() => import("../pages/Not-found"));
 
 // Route wrappers
 const PrivateRoute = ({ children }) => (
@@ -68,6 +69,10 @@ const routes = [
   {
     path: "/post/:slug",
     element: <Post />,
+  },
+  {
+    path: "*",
+    element: <NotFound />, // Default 404 route
   },
 ];
 

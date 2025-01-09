@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Container, PostForm } from "../../components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -6,20 +6,23 @@ import { useSelector } from "react-redux";
 const EditPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  let post = null;
-  if (slug) {
-    post = useSelector((state) =>
-      state.post.data.find((post) => post.$id === slug)
-    );
-  } else {
+
+  const post = slug
+    ? useSelector((state) =>
+        state.post.data.find((post) => post.$id === slug)
+      )
+    : null;
+
+  if (!slug) {
     navigate("/");
+    return null;
   }
 
   return post ? (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-900 py-12">
       <Container>
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold text-gray-200 mb-6 text-center">
             Edit Post
           </h1>
           <PostForm post={post} />
@@ -27,8 +30,8 @@ const EditPost = () => {
       </Container>
     </div>
   ) : (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <p className="text-gray-500 text-lg">Loading post...</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <p className="text-gray-400 text-lg">Loading post...</p>
     </div>
   );
 };

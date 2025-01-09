@@ -1,10 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, lazy, Suspense } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, RTE, Select } from "..";
+import { Button, Input, Select } from "..";
 import fileService from "../../appwrite/file";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createPost, updatePost } from "../../store/slices/postSlice";
+
+// Lazy load the RTE editor
+const RTE = lazy(() => import("../Editor/RTE"));
 
 export default function PostForm({ post }) {
   const [featuredImage, setFeaturedImage] = useState(null);
@@ -95,17 +98,17 @@ export default function PostForm({ post }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="gap-6 flex">
+    <form onSubmit={handleSubmit(submit)} className="gap-6 flex  bg-gray-900 p-6 rounded-lg shadow-lg">
       {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       <div className="w-full md:w-2/3">
         <Input
-          label="Title: "
+          label="Title"
           placeholder="Enter the title"
           {...register("title", { required: "Title is required" })}
           error={errors.title?.message}
         />
         <Input
-          label="Slug: "
+          label="Slug"
           placeholder="Enter the slug"
           {...register("slug", { required: "Slug is required" })}
           onInput={(e) =>
@@ -116,20 +119,22 @@ export default function PostForm({ post }) {
           readOnly={post}
           error={errors.slug?.message}
         />
-        <RTE
-          label="Content: "
-          name="content"
-          control={control}
-          defaultValue={getValues("content")}
-          rules={{ required: "Content is required" }}
-        />
+        <Suspense fallback={<p className="text-gray-500">Loading editor...</p>}>
+          <RTE
+            label="Content"
+            name="content"
+            control={control}
+            defaultValue={getValues("content")}
+            rules={{ required: "Content is required" }}
+          />
+        </Suspense>
         {errors.content && (
-          <p className="text-red-500 text-sm">{errors.content.message}</p>
+          <p className="text-red-500 text-sm mt-2">{errors.content.message}</p>
         )}
       </div>
       <div className="w-full md:w-1/3">
         <Input
-          label="Featured Image: "
+          label="Featured Image"
           type="file"
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", {
@@ -147,7 +152,7 @@ export default function PostForm({ post }) {
         )}
         <Select
           options={["active", "inactive"]}
-          label="Status: "
+          label="Status"
           {...register("status")}
           error={errors.status?.message}
         />
@@ -156,7 +161,7 @@ export default function PostForm({ post }) {
           disabled={loading}
           className={`w-full mt-6 text-white ${
             loading
-              ? "bg-gray-400 cursor-not-allowed"
+              ? "bg-gray-500 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600"
           }`}
         >

@@ -26,19 +26,19 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center  justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 border-2 border-black bg-white rounded-lg shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
         <div className="mb-6 text-center">
           <span className="inline-block w-20 mx-auto">
-            <Logo width="100%" />
+            <Logo />
           </span>
         </div>
-        <h2 className="text-3xl font-bold text-gray-800 text-center">
+        <h2 className="text-3xl font-bold text-gray-100 text-center">
           Sign in to your account
         </h2>
-        <p className="mt-4  text-gray-600 text-center">
+        <p className="mt-4 text-gray-400 text-center">
           Don&apos;t have an account?&nbsp;
-          <Link to="/signup" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-blue-400 hover:underline">
             Signup
           </Link>
         </p>
@@ -48,7 +48,7 @@ const Login = () => {
         <form onSubmit={handleSubmit(login)} className="mt-6">
           <div className="space-y-4">
             <Input
-              label="Email: "
+              label="Email"
               autoComplete="email"
               placeholder="Enter your email"
               type="email"
@@ -62,7 +62,7 @@ const Login = () => {
               error={errors.email?.message}
             />
             <PasswordInput
-              label="Password :"
+              label="Password"
               placeholder="Enter your password"
               {...register("password", {
                 required: "Password is required",
@@ -73,8 +73,8 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className={`w-full ${
-                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-              } text-white`}
+                loading ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-600"
+              } text-gray-100`}
             >
               {loading ? "Signing in..." : "Sign in"}
             </Button>

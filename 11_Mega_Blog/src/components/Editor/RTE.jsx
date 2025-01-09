@@ -20,7 +20,7 @@ export default function RTE({
   return (
     <div className="w-full mb-6">
       {label && (
-        <label className="block mb-2 text-sm font-medium text-gray-700">
+        <label className="block mb-2 text-sm font-medium text-gray-300">
           {label}
         </label>
       )}
@@ -31,7 +31,11 @@ export default function RTE({
         rules={rules}
         render={({ field: { onChange }, fieldState: { error } }) => (
           <>
-            <Suspense fallback={<div>Loading Editor...</div>}>
+            <Suspense
+              fallback={
+                <div className="text-gray-400 text-center">Loading Editor...</div>
+              }
+            >
               <Editor
                 apiKey={config.apiKey}
                 initialValue={defaultValue}
@@ -58,8 +62,22 @@ export default function RTE({
                     "wordcount",
                   ],
                   toolbar: toolbarOptions,
-                  content_style:
-                    "body { font-family: Helvetica, Arial, sans-serif; font-size: 14px; margin: 8px; padding: 8px; }",
+                  content_style: `
+                    body {
+                      background-color: #1f2937;
+                      color: #e5e7eb;
+                      font-family: Helvetica, Arial, sans-serif;
+                      font-size: 14px;
+                      margin: 8px;
+                      padding: 8px;
+                    }
+                    a {
+                      color: #60a5fa;
+                    }
+                    a:hover {
+                      color: #93c5fd;
+                    }
+                  `,
                 }}
                 onEditorChange={onChange}
               />

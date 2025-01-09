@@ -5,13 +5,18 @@ import { Suspense } from "react";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-900 text-gray-200">
+      {/* Header */}
       <Header />
-      <main className="flex-grow w-full container mx-auto px-4 py-8 ">
-        <Suspense fallback={<div>Loading...</div>}>
+
+      {/* Main Content */}
+      <main className="flex-grow w-full container mx-auto px-4 py-8">
+        <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
           <Outlet />
         </Suspense>
       </main>
+
+      {/* Footer */}
       <Footer />
     </div>
   );

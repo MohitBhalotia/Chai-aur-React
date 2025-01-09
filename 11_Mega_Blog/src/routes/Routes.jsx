@@ -59,7 +59,7 @@ const routes = [
     ),
   },
   {
-    path: "/edit-post/:slug",
+    path: "/edit-post/:id",
     element: (
       <PrivateRoute>
         <EditPost />
@@ -67,7 +67,7 @@ const routes = [
     ),
   },
   {
-    path: "/post/:slug",
+    path: "/post/:id",
     element: <Post />,
   },
   {

@@ -15,7 +15,7 @@ export default function PostForm({ post }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.auth.userData.$id);
-  const { slug } = useParams();
+  const { id } = useParams();
 
   const {
     register,
@@ -28,7 +28,7 @@ export default function PostForm({ post }) {
   } = useForm({
     defaultValues: {
       title: post?.title || "",
-      slug: post?.$id || "",
+      slug: post?.slug || "",
       content: post?.content || "",
       status: post?.status || "active",
     },
@@ -74,22 +74,24 @@ export default function PostForm({ post }) {
           await fileService.deleteFile(post.featuredImage);
         }
 
-        const updatedPost = await dispatch(
+        const response = await dispatch(
           updatePost({
-            id: slug,
+            id,
             data,
             featuredImage: file ? file.$id : undefined,
           })
         );
-        navigate(`/post/${updatedPost.payload?.$id}`);
+        if (response.meta.requestStatus === "fulfilled")
+          navigate(`/post/${response.payload?.$id}`);
       } else {
         const file = await fileService.uploadFile(data.image[0]);
 
         if (file) {
           const fileId = file.$id;
           data.featuredImage = fileId;
-          const createdPost = await dispatch(createPost({ ...data, userId }));
-          navigate(`/post/${createdPost.payload?.$id}`);
+          const response = await dispatch(createPost({ ...data, userId }));
+          if (response.meta.requestStatus === "fulfilled")
+            navigate(`/post/${response.payload?.$id}`);
         }
       }
     } catch (err) {
@@ -98,7 +100,10 @@ export default function PostForm({ post }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="gap-6 flex  bg-gray-900 p-6 rounded-lg shadow-lg">
+    <form
+      onSubmit={handleSubmit(submit)}
+      className="gap-6 flex  bg-gray-900 p-6 rounded-lg shadow-lg"
+    >
       {error && <p className="mt-4 text-center text-red-500">{error}</p>}
       <div className="w-full md:w-2/3">
         <Input

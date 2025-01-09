@@ -1,4 +1,4 @@
-import { Client, Databases, Query } from "appwrite";
+import { Client, Databases, ID, Query } from "appwrite";
 import config from "../config/config";
 
 export class PostService {
@@ -27,9 +27,10 @@ export class PostService {
       return await this.databases.createDocument(
         config.appwriteDatabaseId,
         config.appwriteCollectionId,
-        slug,
+        ID.unique(),
         {
           title,
+          slug,
           content,
           featuredImage,
           status,
@@ -42,17 +43,18 @@ export class PostService {
     }
   }
 
-  async updatePost(slug, { title, content, featuredImage, status }) {
+  async updatePost(id, { title,slug, content, featuredImage, status }) {
     try {
-      if (!slug || !title || !content) {
-        throw new Error("Document ID, title, and content are required.");
+      if (!id ||!slug|| !title || !content) {
+        throw new Error("Document ID,title, and content are required.");
       }
       return await this.databases.updateDocument(
         config.appwriteDatabaseId,
         config.appwriteCollectionId,
-        slug,
+        id,
         {
           title,
+          slug,
           content,
           featuredImage,
           status,
@@ -64,15 +66,15 @@ export class PostService {
     }
   }
 
-  async deletePost(slug) {
+  async deletePost(id) {
     try {
-      if (!slug) {
+      if (!id) {
         throw new Error("Document ID is required to delete a post.");
       }
       await this.databases.deleteDocument(
         config.appwriteDatabaseId,
         config.appwriteCollectionId,
-        slug
+        id
       );
       return { success: true, message: "Post deleted successfully." };
     } catch (error) {
@@ -81,15 +83,15 @@ export class PostService {
     }
   }
 
-  async getPost(slug) {
+  async getPost(id) {
     try {
-      if (!slug) {
+      if (!id) {
         throw new Error("Document ID is required to fetch a post.");
       }
       return await this.databases.getDocument(
         config.appwriteDatabaseId,
         config.appwriteCollectionId,
-        slug
+        id
       );
     } catch (error) {
       console.error(`Failed to fetch post: ${error.message}`);

@@ -4,16 +4,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const EditPost = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const post = slug
+  const post = id
     ? useSelector((state) =>
-        state.post.data.find((post) => post.$id === slug)
+        state.post.data.find((post) => post.$id === id)
       )
     : null;
 
-  if (!slug) {
+  if (!id) {
     navigate("/");
     return null;
   }

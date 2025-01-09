@@ -10,20 +10,21 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export default function Post() {
-  const { slug } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        if (slug) {
-          const fetchedPost = await postService.getPost(slug);
+        if (id) {
+          const fetchedPost = await postService.getPost(id);
           setPost(fetchedPost);
         }
       } catch (err) {
@@ -34,9 +35,9 @@ export default function Post() {
       }
     };
     fetchPost();
-  }, [slug]);
+  }, [id]);
 
-  const isAuthor = post && userData ? post.userId === userData.userId : false;
+  const isAuthor = post && userData ? post.userId === userData.$id : false;
 
   const deleteHandler = async () => {
     try {
@@ -55,7 +56,7 @@ export default function Post() {
       <div className="min-h-screen bg-gray-900 py-12">
         <Container>
           <Skeleton
-            height={384}
+            height={600}
             baseColor="#374151"
             highlightColor="#4b5563"
             className="w-full rounded-lg mb-6"
@@ -90,13 +91,27 @@ export default function Post() {
   return post ? (
     <div className="min-h-screen bg-gray-900 py-12">
       <Container>
-        <div className="mb-8">
-          <img
-            src={fileService.getFilePreview(post.featuredImage)}
-            alt={post.title}
-            className="w-full max-h-96 object-cover rounded-lg shadow-md"
-            loading="lazy"
-          />
+        <div className="mb-8 relative">
+          {/* Container to maintain consistent height */}
+          <div className="w-full h-[600px] relative rounded-lg overflow-hidden">
+            {!imageLoaded && (
+              <Skeleton
+                height={600}
+                baseColor="#374151"
+                highlightColor="#4b5563"
+                className="absolute top-0 left-0 w-full h-full"
+              />
+            )}
+            <img
+              src={fileService.getFilePreview(post.featuredImage)}
+              alt={post.title}
+              className={`absolute top-0 left-0 w-full h-full object-scale-down rounded-lg shadow-md transition-opacity duration-500 ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              loading="lazy"
+              onLoad={() => setImageLoaded(true)}
+            />
+          </div>
 
           {isAuthor && (
             <div className="flex justify-end mt-4 space-x-4">

@@ -3,6 +3,8 @@ import { Container, PostCard } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "../../store/slices/postSlice";
 import { useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css"; // Import Skeleton CSS
 
 const Home = () => {
   const user = useSelector((state) => state.auth.status);
@@ -29,14 +31,24 @@ const Home = () => {
     );
   }
 
-  // Handle loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <h1 className="text-3xl font-bold text-gray-700">Loading posts...</h1>
+  // Render Skeletons during loading
+  const renderSkeletons = () => {
+    return Array.from({ length: 8 }).map((_, index) => (
+      <div
+        key={index}
+        className="w-full border border-black bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg"
+      >
+        {/* Skeleton for Image */}
+        <div className="w-full mb-2 p-4">
+          <Skeleton height={192} className="w-full rounded-t-lg" />
+        </div>
+        {/* Skeleton for Title */}
+        <div className="p-4">
+          <Skeleton height={24} />
+        </div>
       </div>
-    );
-  }
+    ));
+  };
 
   // Handle error state
   if (error) {
@@ -52,7 +64,7 @@ const Home = () => {
   }
 
   // Handle empty posts state
-  if (posts.length === 0) {
+  if (!loading && posts.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Container>
@@ -72,17 +84,17 @@ const Home = () => {
     );
   }
 
-  // Render posts
+  // Render posts or skeletons
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <Container>
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          Recent Posts
+          {loading ? <Skeleton width="20%" /> : "Recent Posts"}
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {posts.map((post) => (
-            <PostCard key={post.$id} post={post} />
-          ))}
+          {loading
+            ? renderSkeletons()
+            : posts.map((post) => <PostCard key={post.$id} post={post} />)}
         </div>
       </Container>
     </div>

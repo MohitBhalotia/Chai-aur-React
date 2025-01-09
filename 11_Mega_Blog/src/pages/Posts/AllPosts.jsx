@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { Container, PostCard } from "../../components";
 import { getAllPosts } from "../../store/slices/postSlice";
 import { selectUserPosts } from "../../store/selectors/postSelectors";
-import { useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css"; // Import Skeleton CSS
 
 const AllPosts = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   // Memoized selector for user-specific posts
   const posts = useSelector(selectUserPosts);
@@ -22,21 +22,26 @@ const AllPosts = () => {
     }
   }, [dispatch, posts.length]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <Container>
-          <p
-            className="text-center text-gray-500 text-lg"
-            aria-live="polite"
-          >
-            Loading posts...
-          </p>
-        </Container>
+  // Render Skeletons during loading
+  const renderSkeletons = () => {
+    return Array.from({ length: 8 }).map((_, index) => (
+      <div
+        key={index}
+        className="w-full border border-black bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg"
+      >
+        {/* Skeleton for Image */}
+        <div className="w-full mb-2 p-4">
+          <Skeleton height={192} className="w-full rounded-t-lg" />
+        </div>
+        {/* Skeleton for Title */}
+        <div className="p-4">
+          <Skeleton height={24} />
+        </div>
       </div>
-    );
-  }
+    ));
+  };
 
+  // Error state handling
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
@@ -61,25 +66,14 @@ const AllPosts = () => {
     <div className="min-h-screen bg-gray-50 py-12">
       <Container>
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          All Posts
+          {loading ? <Skeleton width={150} /> : "My Posts"}
         </h1>
-        {posts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {posts.map((post) => (
-              <PostCard key={post.$id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center">
-            <p className="text-gray-500 text-lg mb-4">No posts available.</p>
-            <button
-              onClick={() => navigate("/add-post")}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Add a Post
-            </button>
-          </div>
-        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {loading
+            ? renderSkeletons()
+            : posts.map((post) => <PostCard key={post.$id} post={post} />)}
+        </div>
       </Container>
     </div>
   );

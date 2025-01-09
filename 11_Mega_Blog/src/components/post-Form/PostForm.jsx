@@ -14,7 +14,7 @@ export default function PostForm({ post }) {
   const { loading, error } = useSelector((state) => state.post);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.auth.userData.$id);
+  const userId = useSelector((state) => state.auth.userData.userId);
   const { id } = useParams();
 
   const {

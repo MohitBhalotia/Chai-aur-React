@@ -37,12 +37,12 @@ export default function Post() {
     fetchPost();
   }, [id]);
 
-  const isAuthor = post && userData ? post.userId === userData.$id : false;
+  const isAuthor = post && userData ? post.userId === userData.userId : false;
 
   const deleteHandler = async () => {
     try {
       const status = await dispatch(deletePost(post.$id));
-      if (status) {
+      if (status.meta.requestStatus === "fulfilled") {
         await fileService.deleteFile(post.featuredImage);
         navigate("/my-posts");
       }
